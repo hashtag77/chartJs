@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+
+  <style>
+    canvas{
+        width:800px !important;
+        height:600px !important;
+    }
+  </style>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
+</head>
+<body>
+    <div class="container">
+        <div class="html_form">
+            <h2>HOW MUCH COULD I SAVE?</h2>
+            <label for="male">Age: </label>
+            <br>
+            <input type="text" name="age" class="chart_age" value="50"> years old.
+            <br>
+            <label for="male">Time: </label>
+            <br>
+            <input type="checkbox" name="time_unknown" class="unknown_years" checked>Unknown
+            <br>
+            <input type="checkbox" name="select_years" class="select_years">
+                <input type="text" name="numbers_years" class="numbers_years" style="display: none"> Select Year(s)
+                <span class="numbers_error_message" style="display: none; color: red">Please select year(s).</span>
+            <br>
+            <label for="male">Amount : </label>
+            <br>
+            <input type="text" name="amount" class="chart_amount" value="10000"> to start width
+            <br>
+            <label for="male">Additional amount : </label>
+            <input type="checkbox" name="no_additonal_amount" class="no_additonal_amount">no additional amount
+            <br>
+            <input type="checkbox" name="monthly" class="select_monthly">
+                <input type="text" name="select_monthly" class="select_monthly_data" style="display: none"> Monthly
+            <input type="checkbox" name="yearly" class="select_yearly" checked>
+                <input type="text" name="select_yearly" class="select_yearly_data" style="display: none" value="1200">Yearly
+            <br>
+                <span class="monthly_error_message" style="display: none; color: red">Please provide monthly amount.</span>
+                <span class="yearly_error_message" style="display: none; color: red">Please provide yearly amount.</span>
+            <br>
+            <span class="error_message" style="display: none; color: red">All fields are mandatory.</span>
+            <br>
+            <button type="button" id="display_chart">Click Me!</button>
+        </div>
+    </div>
+    <div id="canvasChart" style="display:none">
+        <canvas id="myChart" width="200" height="200"></canvas>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+    <script>
+    /* Time - START*/
+    $('.unknown_years').change(function() {
+        if($(this).is(":checked")){
+            $('.select_years').attr('checked', false);
+            $(".select_years").attr("disabled", true);
+        } else {
+            $(".select_years").attr("disabled", false);
+        }    
+    });
+    
+    $('.select_years').change(function() {
+        if($(this).is(":checked")){
+            $(this).next('input')[0].style.display = "block";
+            $('.unknown_years').attr('checked', false);
+            $(".unknown_years").attr("disabled", true);
+        } else {
+            $(this).next('input')[0].style.display = "none";
+            $(".unknown_years").attr("disabled", false);
+        }    
+    });
+    /* Time - END*/
+
+    /* Additional Amount - START*/
+    $('.no_additonal_amount').change(function() {
+        if($(this).is(":checked")){
+            $('.select_monthly').attr('checked', false);
+            $(".select_monthly").attr("disabled", true);
+            $('.select_yearly').attr('checked', false);
+            $(".select_yearly").attr("disabled", true);
+        } else {
+            $(".select_monthly").attr("disabled", false);
+            $(".select_yearly").attr("disabled", false);
+        }    
+    });
+    $('.select_monthly').change(function() {
+        if($(this).is(":checked")){
+            $(this).next('input')[0].style.display = "block";
+            $('.no_additonal_amount').attr('checked', false);
+            $(".no_additonal_amount").attr("disabled", true);
+            $('.select_yearly').attr('checked', false);
+            $(".select_yearly").attr("disabled", true);
+        } else {
+            $(this).next('input')[0].style.display = "none";
+            $(".no_additonal_amount").attr("disabled", false);
+            $(".select_yearly").attr("disabled", false);
+        }    
+    });  
+    $('.select_yearly').change(function() {
+        if($(this).is(":checked")){
+            $(this).next('input')[0].style.display = "block";
+            $('.select_monthly').attr('checked', false);
+            $(".select_monthly").attr("disabled", true);
+            $('.no_additonal_amount').attr('checked', false);
+            $(".no_additonal_amount").attr("disabled", true);
+        } else {
+            $(this).next('input')[0].style.display = "none";
+            $(".select_monthly").attr("disabled", false);
+            $(".no_additonal_amount").attr("disabled", false);
+        }    
+    });
+    /* Additional Amount - END */
+    
+    /* Button Click - START */
+    $("#display_chart").on('click', function() {
+        /* Check for missing data - START */
+        if(!$(".chart_age").val() || !$(".chart_amount").val() || ($('.unknown_years:checkbox:checked').length == 0 && $('.select_years:checkbox:checked').length == 0) || ($('.select_monthly:checkbox:checked').length == 0 && $('.select_yearly:checkbox:checked').length == 0 && $('.no_additonal_amount:checkbox:checked').length == 0)) {
+            $('.error_message').css('display', 'block');
+            return false;
+        } else {
+            if($('.select_years:checkbox:checked').length == 1) {
+                if(!$(".numbers_years").val()) {
+                    $('.numbers_error_message').css('display', 'block');
+                    $('.error_message').css('display', 'block');
+                    return false;
+                } else {
+                    $('.numbers_error_message').css('display', 'none');
+                    $('.error_message').css('display', 'none');
+                }
+            }
+            if($('.select_monthly:checkbox:checked').length == 1) {
+                if(!$(".select_monthly_data").val()) {
+                    $('.monthly_error_message').css('display', 'block');
+                    $('.error_message').css('display', 'block');
+                    return false;
+                } else {
+                    $('.monthly_error_message').css('display', 'none');
+                    $('.error_message').css('display', 'none');
+                }
+            }
+            if($('.select_yearly:checkbox:checked').length == 1) {
+                if(!$(".select_yearly_data").val()) {
+                    $('.yearly_error_message').css('display', 'block');
+                    $('.error_message').css('display', 'block');
+                    return false;
+                } else {
+                    $('.yearly_error_message').css('display', 'none');
+                    $('.error_message').css('display', 'none');
+                }
+            }
+        }
+         /* Check for missing data - END */
+
+        $("#canvasChart").css('display', 'block');
+        var age = $(".chart_age").val();
+        var years = $(".numbers_years").val();
+        if($('.unknown_years:checkbox:checked').length == 1) {
+            $(".select_years:checkbox").prop('disabled', true);
+            var years = 65 - parseInt(age);
+        } else if($('.select_years:checkbox:checked').length == 1) {
+            years = years;
+        }
+        var amount1 = amount2 = amount3 = amount4 = amount5 = $(".chart_amount").val();
+        var addtionalAmount = '';
+        if($('.select_monthly:checkbox:checked').length == 1) {
+            addtionalAmount = parseInt($(".select_monthly_data").val()) * 12;
+        } else if($('.select_yearly:checkbox:checked').length == 1)  {
+            addtionalAmount = parseInt($(".select_yearly_data").val());
+        } else if($('.no_additonal_amount:checkbox:checked').length == 1)  {
+            addtionalAmount = '';
+        }
+        var countYears = 0;
+        var labels = ['3% return', '6% return', '10% return', '16% return', '30% return'];
+        var backgroundColor = ['#ccffcc', '#b3ffb3', '#99ff99', '#80ff80', '#66ff66'];
+        var borderRadius = 1;
+        var borderColor = '#ffffff';
+        var xAxis = [];
+        var lineData1 = [];
+        var lineData2 = [];
+        var lineData3 = [];
+        var lineData4 = [];
+        var lineData5 = [];
+        var lineData = [];
+
+        /* Calculations for ChartJs */
+        for(i=0; i<years; i++) {
+            ++countYears;
+
+            /* 3% return */
+            line1 = parseInt(amount1) + ((parseInt(amount1) * 3) / 100);
+            if(addtionalAmount != '' && i >= 1) {
+                line1 = parseInt(line1 + addtionalAmount);
+            }
+            amount1 = line1;
+            lineData1.push(line1);
+
+            /* 6% return */
+            line2 = parseInt(amount2) + ((parseInt(amount2) * 6) / 100);
+            if(addtionalAmount != '' && i >= 1) {
+                line2 = parseInt(line2 + addtionalAmount);
+            }
+            amount2 = line2;
+            lineData2.push(line2);
+
+            /* 10% return */
+            line3 = parseInt(amount3) + ((parseInt(amount3) * 10) / 100);
+            if(addtionalAmount != '' && i >= 1) {
+                line3 = parseInt(line3 + addtionalAmount);
+            }
+            amount3 = line3;
+            lineData3.push(line3);
+
+            /* 16% return */
+            line4 = parseInt(amount4)+ ((parseInt(amount4) * 16) / 100);
+            if(addtionalAmount != '' && i >= 1) {
+                line4 = parseInt(line4 + addtionalAmount);
+            }
+            amount4 = line4;
+            lineData4.push(line4);
+
+            /* 30% return */
+            line5 = parseInt(amount5) + ((parseInt(amount5) * 30) / 100);
+            if(addtionalAmount != '' && i >= 1) {
+                line5 = parseInt(line5 + addtionalAmount);
+            }
+            amount5 = line5;
+            lineData5.push(line5);
+
+            xAxis.push(countYears);
+        }
+        lineData.push(lineData1);
+        lineData.push(lineData2);
+        lineData.push(lineData3);
+        lineData.push(lineData4);
+        lineData.push(lineData5);
+        chartJs(xAxis, labels, backgroundColor, lineData, borderRadius, borderColor);
+    });
+     /* Button Click - End */
+
+     /* ChartJs - START */
+    function chartJs(xAxis, labels, backgroundColor, lineData, borderRadius, borderColor) {
+        var ctx = document.getElementById('myChart').getContext('2d');
+        var myChart = new Chart(ctx, {
+        type: 'line',
+            data: {
+                labels: xAxis,
+                datasets: [
+                {
+                    label: labels[0],
+                    backgroundColor: backgroundColor[0],
+                    data: lineData[0],
+                    borderRadius: borderRadius,
+                    borderColor: borderColor,
+                    pointRadius: 10,
+                },
+                {
+                    label: labels[1],
+                    backgroundColor: backgroundColor[1],
+                    data: lineData[1],
+                    borderRadius: borderRadius,
+                    borderColor: borderColor,
+                },
+                {
+                    label: labels[2],
+                    backgroundColor: backgroundColor[2],
+                    data: lineData[2],
+                    borderRadius: borderRadius,
+                    borderColor: borderColor,
+                },
+                {
+                    label: labels[3],
+                    backgroundColor: backgroundColor[3],
+                    data: lineData[3],
+                    borderRadius: borderRadius,
+                    borderColor: borderColor,
+                },
+                {
+                    label: labels[4],
+                    backgroundColor: backgroundColor[4],
+                    data: lineData[4],
+                    borderRadius: borderRadius,
+                    borderColor: borderColor,
+                }
+                ]
+            },
+            options: {
+            title: {
+                display: true,
+                text: 'Potential return',
+                fontSize: 24,
+            },
+            scales: {
+                yAxes: [{
+                    ticks: {
+                        fontSize: 24
+                    },
+                    scaleLabel: {
+                        display: true,
+                        labelString: 'Amount',
+                        fontSize: 24
+                    },
+                    gridLines: {
+                        color: "#ffffff",
+                    }   
+                }],
+                xAxes: [{
+                    ticks: {
+                        fontSize: 24
+                    },
+                    scaleLabel: {
+                        display: true,
+                        labelString: 'Years',
+                        fontSize: 24
+                    },
+                    gridLines: {
+                        color: "#ffffff",
+                    }   
+                }]
+            },
+            legend: {
+                labels: {
+                    fontSize: 24
+                }
+            }
+            }
+        });
+    }
+    /* ChartJs - END */
+    </script>
+</body>
+</html>
