@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <style>
+    canvas {
+        height: 400px !important;
+        width: 400px !important;
+    }
+    </style>
+</head>
+<body>
+  <div class="container">
+    <div class="row">
+      <div class="col-md-2">
+        <div class="form-group" style="display: inline">
+          <label for="users">2003</label>
+          <input class="form-control" name="users" type="text" id="input1"><br>
+        </div>
+        <div class="form-group" style="display: inline">
+          <label>2008</label>
+          <input type="text" id="input2" class="form-control"><br>
+        </div>
+        <div class="form-group" style="display: inline">
+          <label>2011</label>
+          <input type="text" id="input3" class="form-control"><br>
+        </div>
+        <div class="form-group" style="display: inline">
+          <label>2015</label>
+          <input type="text" id="input4" class="form-control"><br>
+        </div>
+        <div class="form-group" style="display: inline">
+          <label>2019</label>
+          <input type="text" id="input5" class="form-control"><br>
+        </div>
+          <button class="btn btn-success" id="fatchData" >Click Me</button>
+      </div>
+      <div class="col-md-5">
+        <canvas id="barChart" width="400" height="400"></canvas>
+      </div>
+      <div class="col-md-5">
+        <canvas id="pieChart" width="400" height="400"></canvas>
+    </div>
+    </div>
+  </div>
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.js"></script>
+    <script>
+        $("#fatchData").on('click', function() {
+            var one = $("#input1").val();
+            var two = $("#input2").val();
+            var three = $("#input3").val();
+            var four = $("#input4").val();
+            var five = $("#input5").val();
+
+            data = [one, two, three, four, five];
+            xAxis = ['2003', '2008', '2011', '2015', '2019'];
+
+            /* bar code */
+            labels = 'Statistics';
+            backgroundColor = '#4dff4d';
+            barChart(xAxis, labels, data, backgroundColor);
+            
+            /* pie code */
+            pieBackgroundColor = ['#ff0080', '#5500ff', '#0080ff', '#ff0000', '#ff6600'];
+            pieChart(xAxis, data, pieBackgroundColor)
+        });
+        function barChart(xAxis, labels, data, backgroundColor) {
+            var ctx = document.getElementById('barChart');
+            var myChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: xAxis,
+                    datasets: [{
+                        label: labels,
+                        data: data,
+                        backgroundColor: backgroundColor,
+                        borderColor: '#ffffff',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    tooltips: {
+                        titleFontSize: 18,
+                        bodyFontSize: 18,
+                        titleFontFamily: "Arial",
+                        bodyFontFamily: "Arial"
+                    },
+                    scales: {
+                        yAxes: [{
+                            ticks: {
+                                fontSize: 18,
+                                beginAtZero: true
+                            },
+                            scaleLabel: {
+                              display: true,
+                              labelString: 'Growth',
+                              fontSize: 18
+                          },
+                        }],
+                        xAxes: [{
+                            ticks: {
+                                fontSize: 18,
+                                beginAtZero: true
+                            },
+                            scaleLabel: {
+                              display: true,
+                              labelString: 'Years',
+                              fontSize: 18
+                          },
+                        }]
+                    },
+                    legend: {
+                        labels: {
+                            fontSize: 18,
+                        }
+                    }
+                }
+            });
+        }   
+        
+        function pieChart(xAxis, data, pieBackgroundColor) {
+            var ctx = document.getElementById('pieChart');
+            var myChart = new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: xAxis,
+                    datasets: [{
+                        label: '# of Votes',
+                        data: data,
+                        backgroundColor: pieBackgroundColor,
+                        borderColor: '#ffffff',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    tooltips: {
+                        titleFontSize: 18,
+                        bodyFontSize: 18,
+                        titleFontFamily: "Arial",
+                        bodyFontFamily: "Arial"
+                    },
+                    scales: {
+                        yAxes: [{
+                            ticks: {
+                                display: false,
+                                beginAtZero: true
+                            },
+                            gridLines: {
+                                color: "#ffffff"    
+                            }
+                        }]
+                    },
+                    legend: {
+                        labels: {
+                            fontSize: 18
+                        },
+                        position: 'right'
+                    }
+                }
+            });
+        }   
+
+    </script>
+</body>
+</html>
