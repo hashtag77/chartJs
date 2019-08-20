@@ -7,9 +7,12 @@
   <title>Document</title>
 
   <style>
-    canvas{
+    canvas {
         width:800px !important;
         height:600px !important;
+    }
+    div#canvasChart {
+        margin: 30px;
     }
   </style>
 
@@ -19,13 +22,14 @@
     <div class="container">
         <div class="html_form">
             <h2>HOW MUCH COULD I SAVE?</h2>
+        <form>
             <label for="male">Age: </label>
             <br>
-            <input type="text" name="age" class="chart_age" value="50"> years old.
+            <input type="text" name="age" class="chart_age" value="30"> years old.
             <br>
             <label for="male">Time: </label>
             <br>
-            <input type="checkbox" name="time_unknown" class="unknown_years" checked>Unknown
+            <input type="checkbox" name="time_unknown" class="unknown_years" checked="">Unknown
             <br>
             <input type="checkbox" name="select_years" class="select_years">
                 <input type="text" name="numbers_years" class="numbers_years" style="display: none"> Select Year(s)
@@ -48,14 +52,35 @@
             <br>
             <span class="error_message" style="display: none; color: red">All fields are mandatory.</span>
             <br>
-            <button type="button" id="display_chart">Click Me!</button>
+        </form> 
+        <button type="button" id="display_chart">WHAT COULD I SAVE?</button>
+        </div><!-- End html_form -->
+        <div class="chart-result-text" style="display:none">
+            <p> If your investment is now <strong><span class="q3_data"></span></strong>, and you add each year to your initial capital <strong><span class="q4_data"></span></strong> for the next <strong><span class="q2_data"></span></strong>,your total investment will be worth <strong><span class="q_data"></span></strong>
+                <br><br>
+            Based on our historical performances and statistics, during the time of your personal investment
+            <strong><span class="q2_data"></span></strong>, the result expected with your investments could raise up to <strong><span class="total_amount_data">500000</span></strong>.
+            <br><br>
+            That would be a profit of <strong><span class="total_amount">900000</span></strong>
+            <br><br>
+            If you're interested you can contact us via the contact form <a href="#">Click Here</a> or by mail at
+            info@wisechain.ch.
+            </p>
         </div>
     </div>
-    <div id="canvasChart" style="display:none">
+    <div id="canvasChart">
         <canvas id="myChart" width="200" height="200"></canvas>
+        <p class="graph-bottom-text" style="font-size:10px;margin-top:20px;text-align: center;">As with all investing, your capital is at risk. The value of your portfolio can go down as well as up and you may get back less than you invest. Past performance is not a reliable indicator of future performance. A stocks and shares ISA may not be right for everyone and tax rules may change in the future. If you are unsure if an ISA is the right choice for you, please seek independent financial advice.</p>
     </div>
     <script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
     <script>
+    $( document ).ready(function() {
+            xAxis = [1, 2, 3, 4, 5];
+            labels = ['3% return', '6% return', '10% return', '16% return', '30% return'];
+            lineData = [];
+            chartJs(xAxis, labels, lineData)
+            console.log( "ready!" );
+     });
     /* Time - START*/
     $('.unknown_years').change(function() {
         if($(this).is(":checked")){
@@ -158,29 +183,27 @@
         }
          /* Check for missing data - END */
 
-        $("#canvasChart").css('display', 'block');
+        // $("#canvasChart").css('display', 'block');
         var age = $(".chart_age").val();
         var years = $(".numbers_years").val();
         if($('.unknown_years:checkbox:checked').length == 1) {
             $(".select_years:checkbox").prop('disabled', true);
-            var years = 65 - parseInt(age);
+            years = 65 - parseInt(age);
         } else if($('.select_years:checkbox:checked').length == 1) {
             years = years;
         }
-        var amount1 = amount2 = amount3 = amount4 = amount5 = $(".chart_amount").val();
-        var addtionalAmount = '';
+        var amount = amount1 = amount2 = amount3 = amount4 = amount5 = $(".chart_amount").val();
+        var addtionalAmount = 0;
         if($('.select_monthly:checkbox:checked').length == 1) {
             addtionalAmount = parseInt($(".select_monthly_data").val()) * 12;
         } else if($('.select_yearly:checkbox:checked').length == 1)  {
             addtionalAmount = parseInt($(".select_yearly_data").val());
         } else if($('.no_additonal_amount:checkbox:checked').length == 1)  {
-            addtionalAmount = '';
+            addtionalAmount = addtionalAmount;
         }
-        var countYears = 0;
+        var countYears = 
+        0;
         var labels = ['3% return', '6% return', '10% return', '16% return', '30% return'];
-        var backgroundColor = ['#ccffcc', '#b3ffb3', '#99ff99', '#80ff80', '#66ff66'];
-        var borderRadius = 1;
-        var borderColor = '#ffffff';
         var xAxis = [];
         var lineData1 = [];
         var lineData2 = [];
@@ -240,95 +263,119 @@
         lineData.push(lineData3);
         lineData.push(lineData4);
         lineData.push(lineData5);
-        chartJs(xAxis, labels, backgroundColor, lineData, borderRadius, borderColor);
+        chartJs(xAxis, labels, lineData);
+
+        $('.chart-result-text').css('display', 'block');
+        $(".q3_data").html(amount);
+        $(".q4_data").html(addtionalAmount);
+        $(".q2_data").html(years);
+
+        /* (Field3 * Field2) + (Field4 * Field2) */
+        var qData = (amount * years) + (addtionalAmount * years);
+
+        $(".q_data").html(qData);
+        $(".total_amount_data").html(lineData5[years - 1]);
+        $(".total_amount").html(lineData5[years - 1] - qData);
     });
      /* Button Click - End */
 
      /* ChartJs - START */
-    function chartJs(xAxis, labels, backgroundColor, lineData, borderRadius, borderColor) {
+    function chartJs(xAxis, labels, lineData) {
         var ctx = document.getElementById('myChart').getContext('2d');
         var myChart = new Chart(ctx, {
+        plugins: [{
+            beforeInit: function(chart, options) {
+            chart.legend.afterFit = function() {
+                this.height = this.height + 50;
+            };
+            }
+        }],
         type: 'line',
             data: {
                 labels: xAxis,
                 datasets: [
-                {
-                    label: labels[0],
-                    backgroundColor: backgroundColor[0],
-                    data: lineData[0],
-                    borderRadius: borderRadius,
-                    borderColor: borderColor,
-                    pointRadius: 10,
-                },
-                {
-                    label: labels[1],
-                    backgroundColor: backgroundColor[1],
-                    data: lineData[1],
-                    borderRadius: borderRadius,
-                    borderColor: borderColor,
-                },
-                {
-                    label: labels[2],
-                    backgroundColor: backgroundColor[2],
-                    data: lineData[2],
-                    borderRadius: borderRadius,
-                    borderColor: borderColor,
-                },
-                {
-                    label: labels[3],
-                    backgroundColor: backgroundColor[3],
-                    data: lineData[3],
-                    borderRadius: borderRadius,
-                    borderColor: borderColor,
-                },
-                {
-                    label: labels[4],
-                    backgroundColor: backgroundColor[4],
-                    data: lineData[4],
-                    borderRadius: borderRadius,
-                    borderColor: borderColor,
-                }
+                    {
+                        label: labels[0],
+                        backgroundColor: '#00ff99',
+                        data: lineData[0],
+                        borderRadius: 1,
+                        borderColor: '#ffffff',
+                    },
+                    {
+                        label: labels[1],
+                        backgroundColor: '#66cc99',
+                        data: lineData[1],
+                        borderRadius: 1,
+                        borderColor: '#ffffff',
+                    },
+                    {
+                        label: labels[2],
+                        backgroundColor: '#b3e6cc',
+                        data: lineData[2],
+                        borderRadius: 1,
+                        borderColor: '#ffffff',
+                    },
+                    {
+                        label: labels[3],
+                        backgroundColor: '#ccffcc',
+                        data: lineData[3],
+                        borderRadius: 1,
+                        borderColor: '#ffffff',
+                    },
+                    {
+                        label: labels[4],
+                        backgroundColor: '#4dff4d',
+                        data: lineData[4],
+                        borderRadius: 1,
+                        borderColor: '#ffffff',
+                    }
                 ]
             },
             options: {
-            title: {
-                display: true,
-                text: 'Potential return',
-                fontSize: 24,
-            },
-            scales: {
-                yAxes: [{
-                    ticks: {
+                tooltips: {
+                    titleFontSize: 24,
+                    bodyFontSize: 24,
+                    titleFontFamily: "Arial",
+                    bodyFontFamily: "Arial"
+                },
+                title: {
+                    display: true,
+                    text: 'Potential return',
+                    fontSize: 24,
+                },
+                scales: {
+                    yAxes: [{
+                        ticks: {
+                            fontSize: 24
+                        },
+                        scaleLabel: {
+                            display: true,
+                            labelString: 'Amount',
+                            fontSize: 24
+                        },
+                        gridLines: {
+                            color: "#f5f5f0",
+                        }   
+                    }],
+                    xAxes: [{
+                        ticks: {
+                            fontSize: 24
+                        },
+                        scaleLabel: {
+                            display: true,
+                            labelString: 'Years',
+                            fontSize: 24
+                        },
+                        gridLines: {
+                            color: "#f5f5f0",
+                        }   
+                    }]
+                },
+                legend: {
+                    labels: {
                         fontSize: 24
-                    },
-                    scaleLabel: {
-                        display: true,
-                        labelString: 'Amount',
-                        fontSize: 24
-                    },
-                    gridLines: {
-                        color: "#ffffff",
-                    }   
-                }],
-                xAxes: [{
-                    ticks: {
-                        fontSize: 24
-                    },
-                    scaleLabel: {
-                        display: true,
-                        labelString: 'Years',
-                        fontSize: 24
-                    },
-                    gridLines: {
-                        color: "#ffffff",
-                    }   
-                }]
-            },
-            legend: {
-                labels: {
-                    fontSize: 24
+                    }
                 }
-            }
             }
         });
     }
