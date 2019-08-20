@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <style>
+    canvas {
+        height: 500px !important;
+        width: 500px !important;
+    }
+    </style>
+</head>
+<body>
+  <div class="container">
+    <div class="row">
+      <div class="col-md-3">
+        <div class="form-group" style="display: inline">
+          <label for="users">Users</label>
+          <input class="form-control" name="users" type="text" id="input1"><br>
+        </div>
+        <div class="form-group" style="display: inline">
+          <label>Blogs</label>
+          <input type="text" id="input2" class="form-control"><br>
+        </div>
+        <div class="form-group" style="display: inline">
+          <label>Comments</label>
+          <input type="text" id="input3" class="form-control"><br>
+        </div>
+        <div class="form-group" style="display: inline">
+          <label>Likes</label>
+          <input type="text" id="input4" class="form-control"><br>
+        </div>
+          <button class="btn btn-success" id="fatchData" >Fetch Data</button>
+      </div>
+      <div class="col-md-9">
+        <canvas id="myChart" width="400" height="400"></canvas>
+      </div>
+    </div>
+  </div>
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.js"></script>
+    <script>
+        $("#fatchData").on('click', function() {
+            var one = $("#input1").val();
+            var two = $("#input2").val();
+            var three = $("#input3").val();
+            var four = $("#input4").val();
+            data = [one, two, three, four];
+            labels = ['Users', 'Blogs', 'Comments', 'Likes'];
+            backgroundColor = ['#00ff99', '#66cc99', '#b3e6cc', '#4dff4d'];
+            borderColor = ['rgba(255, 99, 132, 1)', 'rgba(54, 162, 235, 1)', 'rgba(255, 206, 86, 1)', 'rgba(75, 192, 192, 1)'];
+            pieChart(labels, data, backgroundColor, borderColor);
+        });
+        function pieChart(labels, data, backgroundColor, borderColor) {
+            var ctx = document.getElementById('myChart');
+            var myChart = new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: '# of Votes',
+                        data: data,
+                        backgroundColor: backgroundColor,
+                        borderColor: borderColor,
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    tooltips: {
+                        titleFontSize: 34,
+                        bodyFontSize: 34,
+                        titleFontFamily: "Arial",
+                        bodyFontFamily: "Arial"
+                    },
+                    scales: {
+                        yAxes: [{
+                            ticks: {
+                                display: false,
+                                beginAtZero: true
+                            },
+                            gridLines: {
+                                color: "#ffffff"    
+                            }
+                        }]
+                    },
+                    legend: {
+                        labels: {
+                            fontSize: 25
+                        }
+                    }
+                }
+            });
+        }   
+    </script>
+</body>
+</html>
