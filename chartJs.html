@@ -251,12 +251,13 @@
         var ctx = document.getElementById('myChart').getContext('2d');
         var myChart = new Chart(ctx, {
         plugins: [{ 
-           beforeInit: function(chart, options) {
-           chart.legend.afterFit = function() {
-               this.height = this.height + 50;
-           };
-           }
+            beforeInit: function(chart, options) {
+                chart.legend.afterFit = function() {
+                    this.height = this.height + 50;
+                };
+            }
         }],
+        responsive: true,
         type: 'line',
             data: {
                 labels: xAxis,
