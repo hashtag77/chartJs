@@ -72,12 +72,14 @@
     $('.unknown_years').change(function() {
         if($(this).is(":checked")){
             $('.select_years').attr('checked', false);
+            $('.numbers_years').attr('disabled', true);
         }
     });
     
     $('.select_years').change(function() {
         if($(this).is(":checked")){
             $('.unknown_years').attr('checked', false);
+            $('.numbers_years').attr('disabled', false);
         }
     });
     /* Time - END*/
@@ -87,18 +89,24 @@
         if($(this).is(":checked")){
             $('.select_monthly').attr('checked', false);
             $('.select_yearly').attr('checked', false);
+            $('.select_monthly_data').attr('disabled', true);
+            $('.select_yearly_data').attr('disabled', true);
         }
     });
     $('.select_monthly').change(function() {
         if($(this).is(":checked")){
             $('.no_additonal_amount').attr('checked', false);
             $('.select_yearly').attr('checked', false);
+            $('.select_monthly_data').attr('disabled', false);
+            $('.select_yearly_data').attr('disabled', true);
         }
     });  
     $('.select_yearly').change(function() {
         if($(this).is(":checked")){
             $('.select_monthly').attr('checked', false);
             $('.no_additonal_amount').attr('checked', false);
+            $('.select_monthly_data').attr('disabled', true);
+            $('.select_yearly_data').attr('disabled', false);
         }    
     });
     /* Additional Amount - END */
